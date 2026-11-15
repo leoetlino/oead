@@ -216,7 +216,7 @@ void Fstm::SerializeDataBlock(util::AudioWriter& writer) const {
 
   for (auto& channel : m_samples) {
     writer.WriteSamples(channel, m_info.StreamInfo().encoding);
-    if (channel != m_samples.back())
+    if (&channel != &m_samples.back())
       writer.AlignUp(0x20);
   }
 
