@@ -14,7 +14,7 @@ public:
   ScopeGuard(Callable&& finalizer) : m_finalizer(std::forward<Callable>(finalizer)) {}
 
   ScopeGuard(ScopeGuard&& other) : m_finalizer(std::move(other.m_finalizer)) {
-    other.m_finalizer = nullptr;
+    other.m_finalizer.reset();
   }
 
   ~ScopeGuard() { Exit(); }
