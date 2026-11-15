@@ -59,7 +59,14 @@ public:
   /// Get an array of all files
   const auto& Files() const { return m_files; }
   /// Set the array of files
-  void Files(const std::vector<FileWithMetadata>& files) { m_files = files; }
+  void Files(const std::vector<FileWithMetadata>& files) {
+    // files may alias m_files.
+    const auto new_files{files};
+    m_files.clear();
+    m_hashes.clear();
+    for (const auto& file : new_files)
+      AddFile(file.meta, file.asset);
+  }
 
   /// Get a file by index
   const auto& GetFile(int idx) const { return m_files.at(idx); }
