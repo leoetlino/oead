@@ -69,7 +69,7 @@ public:
     if (loop_end_frame < m_loop_start_frame)
       throw InvalidDataError("Wave: Loop end frame is lower than start frame");
 
-    m_loop_start_frame = loop_end_frame;
+    m_loop_end_frame = loop_end_frame;
   }
 
   /// Get the original loop start frame
