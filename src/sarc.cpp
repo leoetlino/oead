@@ -323,7 +323,8 @@ std::pair<u32, std::vector<u8>> SarcWriter::Write() {
   }
 
   // File data
-  const u32 required_alignment = absl::c_accumulate(alignments, 1u, std::lcm<u32, u32>);
+  const u32 required_alignment =
+      absl::c_accumulate(alignments, 1u, [](u32 a, u32 b) { return std::lcm(a, b); });
   writer.AlignUp(required_alignment);
   const u32 data_offset_begin = u32(writer.Tell());
   for (size_t i = 0; i < files.size(); ++i) {
