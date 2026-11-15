@@ -67,7 +67,7 @@ public:
   const auto& GetFile(const std::string& name) const {
     u32 hash{util::crc32(name)};
     auto iter{std::lower_bound(m_hashes.begin(), m_hashes.end(), hash)};
-    if (iter == m_hashes.end())
+    if (iter == m_hashes.end() || *iter != hash)
       throw InvalidDataError("Name not found");
 
     return GetFile(std::distance(m_hashes.begin(), iter));
