@@ -34,3 +34,12 @@ def test_sarc_get_file_bad_argument(file):
     arc = oead.Sarc(cases_data[file])
     with pytest.raises(TypeError):
         arc.get_file(0.5)
+
+
+def test_sarc_get_file_missing_name_below_first_hash():
+    writer = oead.SarcWriter(oead.Endianness.Little)
+    writer.files["zzzzzzzzzzzzzz"] = b"x"
+    arc = oead.Sarc(writer.write()[1])
+
+    # Hashes to the little-endian SFNT magic that follows the one-entry SFAT.
+    assert arc.get_file("DO;3N0") is None
