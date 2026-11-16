@@ -88,38 +88,24 @@ public:
   auto& GetVariant() { return m_value; }
   const auto& GetVariant() const { return m_value; }
 
-  /// Get an item from a map/hash.
-  template <typename T>
-  struct Reference {
-    Reference(T value) : m_storage{std::move(value)} {}
-    Reference(std::reference_wrapper<T> value) : m_storage{std::move(value)} {}
-    T* operator->() const {
-      if (auto ptr = std::get_if<0>(&m_storage))
-        return ptr;
-      if (auto ptr = std::get_if<1>(&m_storage))
-        return &ptr->get();
-      return nullptr;
-    }
-    T& operator*() const { return *operator->(); }
-
-  private:
-    using Storage = std::variant<T, std::reference_wrapper<T>>;
-    Storage m_storage;
-  };
-
-  template <Type Type, typename T>
-  Reference<const T> Get(std::string_view key, T default_) const {
+  /// Find an item of the given type in a map/hash. Returns nullptr if the key does not exist.
+  template <Type type>
+  auto* Find(std::string_view key) {
     auto it = GetHash().find(key);
-    if (it == GetHash().end())
-      return default_;
-    return std::cref(it->second.Get<Type>());
+    return it == GetHash().end() ? nullptr : &it->second.Get<type>();
   }
-  template <Type Type, typename T>
-  Reference<T> Get(std::string_view key, T default_) {
+  template <Type type>
+  const auto* Find(std::string_view key) const {
     auto it = GetHash().find(key);
-    if (it == GetHash().end())
-      return default_;
-    return std::ref(it->second.Get<Type>());
+    return it == GetHash().end() ? nullptr : &it->second.Get<type>();
+  }
+
+  /// Get a copy of an item from a map/hash, or default_ if the key does not exist.
+  template <Type type, typename T>
+  T Get(std::string_view key, T default_) const {
+    if (const auto* value = Find<type>(key))
+      return *value;
+    return default_;
   }
 
   /// Load a document from binary data.
